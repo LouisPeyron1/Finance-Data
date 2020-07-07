@@ -37,7 +37,7 @@ def prediction(value):
   model.add(Dense(12, activation="linear"))
   model.add(Dense(1, activation="linear"))
   model.compile(loss='mean_squared_error', optimizer='adam')
-  model.fit(TrainX, TrainY, epochs=1000, batch_size=4, verbose=4)
+  model.fit(TrainX, TrainY, epochs=1000, batch_size=2, verbose=2)
   trainScore = model.evaluate(TrainX, TrainY, verbose=0)
   print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore, math.sqrt(trainScore)))
   testScore = model.evaluate(TestX, TestY, verbose=0)
@@ -45,7 +45,7 @@ def prediction(value):
   testPredict = model.predict(TestX)
   testPredictPlot = np.zeros(115)
   for i in range (0,115):
-    testPredictPlot[i]=testPredict[i]+15
+    testPredictPlot[i]=testPredict[i]
   plt.plot(dates[343:458],value.open[343:458])
   plt.plot(dates[343:458],testPredictPlot)
   plt.show()
