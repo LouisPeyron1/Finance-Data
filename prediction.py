@@ -27,8 +27,9 @@ import csv
 import pandas as pd
 from scipy import linalg
 from numpy import *
-
-def prediction(value):
+#value is a data frame which can contain all types of information on the value studied (google news trend, volatility, volume, ...). however it is necessary to be careful to modify the time scale with dates = pd. date_range ('2010-01-03', periods = 458, freq = 'W')
+#before loaching the prediction function
+def prediction(value): #input is the dataframe described, and the output is the test and train score and the plot of both train and testpredict with the real open price of the share
   train,test=createtrain(value)
   TrainX,TrainY=create_dataset(train,look_back=1)
   TestX,TestY=create_dataset(test)
@@ -43,36 +44,42 @@ def prediction(value):
   testScore = model.evaluate(TestX, TestY, verbose=0)
   print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore, math.sqrt(testScore)))
   testPredict = model.predict(TestX)
-  testPredictPlot = np.zeros(115)
-  for i in range (0,115):
-    testPredictPlot[i]=testPredict[i]
-  plt.plot(dates[343:458],value.open[343:458])
-  plt.plot(dates[343:458],testPredictPlot)
+  #Here there is also an other part that can be modify, 
+  testPredictPlot = np.zeros(len(value.open)
+  for i in range (0,len(value.open)-len(testPredict)):
+                             testPredictPlot[i]=TrainY[i]
+  for i in range (len(testPredict)):
+                             testPredictPlot[len(value.open)-len(testPredict)+i]=testPredict[i]
+  plt.plot(dates,value.open)
+  plt.plot(dates,testPredictPlot)
   plt.show()
 
-def createtrain(value):
+def createtrain(value): #input = dataframe, and the output is both training and testing dataset 
   train_size = int(len(value.open) * 0.75)
   test_size = len(value.open) - train_size
   train=value[0:train_size]
   test=value[train_size:len(value)]
   return train,test
 
-def timeseriesanalysis(open,news,volume,volatility ):
+def timeseriesanalysis(open,news,volume,volatility,... ): #input all datasets you want, to see correlation ith the open share price and return a datapframe 
   dates = pd.date_range('2010-01-03', periods=458, freq='W')
   valueW=Series(open,index=dates)
   NvalueW=Series(news,index=dates)
   VvalueW=Series(volatility ,index=dates)
   VolvalueW=Series(volume,index=dates)
-  value = DataFrame({'open' : valueW, 'volatility' : VvalueW, 'volume':VolvalueW, 'news':NvalueW})
+                             ...
+  value = DataFrame({'open' : valueW, 'volatility' : VvalueW, 'volume':VolvalueW, 'news':NvalueW,...})
   value.plot(subplots=True)
   value.describe()
-  value.corr()
   value['open'].rolling(window=12, center=False).mean().plot(style='-g')
   value.open.rolling(window=12).corr(other=value.news).plot(style='-g')
   value.open.rolling(window=12).corr(other=value.volatility).plot(style='-g')
   value.open.rolling(window=12).corr(other=value.volume).plot(style='-g')
+  print(value.corr())                          
+  return(value)
+                            
 
-def create_dataset(dataset, look_back=1):
+def create_dataset(dataset, look_back=1):#input is traning and testing dataset, created by createtrain, and gives us the training and testing datset we are going to use for prediction
   n=len(dataset)
   dataY=np.zeros(n)
   dataX=np.zeros(shape=(n,2))
